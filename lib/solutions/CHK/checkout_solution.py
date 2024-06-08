@@ -18,6 +18,8 @@ LEGAL_SKUS = INFO.keys()
 # noinspection PyUnusedLocal
 # skus = unicode string
 def checkout(skus):
+    if not valid(skus):
+        return -1
     d = parse_skus(skus)
 
     result = 0
@@ -28,6 +30,9 @@ def checkout(skus):
         else:
             result += price * amount
     return result
+
+def valid(skus):
+    return all([i in LEGAL_SKUS for i in skus])
 
 def parse_skus(skus):
     d = {}
