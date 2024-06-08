@@ -1,6 +1,43 @@
+# +------+-------+----------------+
+# | Item | Price | Special offers |
+# +------+-------+----------------+
+# | A    | 50    | 3A for 130     |
+# | B    | 30    | 2B for 45      |
+# | C    | 20    |                |
+# | D    | 15    |                |
+# +------+-------+----------------+
 
+INFO = {
+    'A': (50, (3, 130)),
+    'B': (30, (2, 45)),
+    'C': (20, None),
+    'D': (15, None),
+    }
+LEGAL_SKUS = INFO.keys()
 
 # noinspection PyUnusedLocal
 # skus = unicode string
 def checkout(skus):
-    raise NotImplementedError()
+    d = parse_skus(skus)
+
+    result = 0
+    for item, amount in d.items():
+        price, offer = INFO[item]
+        if offer:
+            result += calc_offer(amount, price, offer)
+        else:
+            result += price * amount
+    return result
+
+def parse_skus(skus):
+    d = {}
+    for i in skus:
+        if i in LEGAL_SKUS:
+                d.setdefault(i, 0)
+                d[i] += 1
+    return d
+    
+def calc_offer(amount, normal_price, offer):
+    multiple, special_price = offer
+    specials, normals = divmod(amount, multiple)
+    return (specials * special_price) + (normals * normal_price)
