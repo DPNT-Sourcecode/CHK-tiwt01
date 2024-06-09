@@ -48,9 +48,7 @@ def multiple_price(basket, sku, context):
     multi_amount = context['amount']
     multi_price = context['price']
     while basket.to_pay_for.get(sku, 0) >= multi_amount:
-        basket.to_pay_for[sku] -= multi_amount
-        basket.paid_for.setdefault(sku, 0)
-        basket.paid_for[sku] += multi_amount
+        basket.transfer(sku, multi_amount)
         basket.price += multi_price
     return basket
 
@@ -59,17 +57,38 @@ def free_partner(basket, _, context):
     sku = context['main_sku']
     partner = context['partner_sku']
     while basket.to_pay_for.get(sku, 0) >= trigger_amount:
-        basket.to_pay_for[sku] -= trigger_amount
-        basket.paid_for.setdefault(sku, 0)
-        basket.paid_for[sku] += trigger_amount
+        basket.transfer(sku, trigger_amount)
         basket.price += PRICES[sku] * trigger_amount
         pa = basket.to_pay_for.get(partner, 0)
         if pa:
-            basket.to_pay_for[partner] -= 1
-            basket.paid_for.setdefault(partner, 0)
-            basket.paid_for[partner] += 1
+            basket.transfer(partner, 1)
     return basket
-        
+
+def multi(basket, _, context):
+    # buy any 3 of (S,T,X,Y,Z) for 45
+    trigger_amount = context['amount']
+    partners = multi_sorted_by_price(context['partners'])
+    price = context['price']
+    pa = multi_threshold(basket, partners)
+    while pa >= trigger_amount:
+        basket = multi_transfer(basket, partners, trigger_amount)
+        basket.price += price
+        pa = multi_threshold(basket, partners)
+    return basket
+
+def multi_transfer(basket, partners, amount):
+    while amount > 0:
+        partner = [sku for sku in partners if basket.to_pay_for.get(sku)][0]
+        basket.transfer(partner, 1)
+        amount -= 1
+    return basket
+    
+def multi_sorted_by_price(skus):
+    return sorted(skus, key=lambda sku: PRICES.get(sku,0), reverse=True)
+
+def multi_threshold(basket, partners):
+    return sum([basket.to_pay_for.get(sku, 0) for sku in partners])
+
 # '*' discounts are "whole basket" discounts
 DISCOUNTS = {
     'A': [(multiple_price, {'amount': 3, 'price': 130}),
@@ -88,8 +107,9 @@ DISCOUNTS = {
           (multiple_price, {'amount': 3, 'price': 130}),
           ],
     '*': ((free_partner, {'amount': 2, 'main_sku': 'E', 'partner_sku': 'B'}),
-          (free_partner, {'amount': 3, 'main_sku': 'N', 'partner_sku': 'M'}),          
-          (free_partner, {'amount': 3, 'main_sku': 'R', 'partner_sku': 'Q'}),          
+          (free_partner, {'amount': 3, 'main_sku': 'N', 'partner_sku': 'M'}),
+          (free_partner, {'amount': 3, 'main_sku': 'R', 'partner_sku': 'Q'}),
+          (multi, {'amount': 3, 'partners': 'STXYZ', 'price': 45}),
           )
     }
 
@@ -158,3 +178,8 @@ class Basket:
         for sku, amount in self.to_pay_for.items():
             self.price += PRICES[sku] * amount
             # self.to_pay_for.pop(sku) # TODO
+
+    def transfer(self, sku, amount):
+        self.to_pay_for[sku] -= amount
+        self.paid_for.setdefault(sku, 0)
+        self.paid_for[sku] += amount

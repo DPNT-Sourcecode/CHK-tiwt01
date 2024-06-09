@@ -32,9 +32,13 @@ class TestChk():
         assert checkout_solution.checkout('EEEB') == 120
 
     def test_special_eeeebb(self):
-        assert checkout_solution.checkout('EEEEBB') ==160
+        assert checkout_solution.checkout('EEEEBB') == 160
 
-"""
- - {"method":"checkout","params":["EEB"],"id":"CHK_R2_024"}, expected: 80, got: 110
- - {"method":"checkout","params":["EEEB"],"id":"CHK_R2_025"}, expected: 120, got: 150
- - {"method":"checkout","params":["EEEEBB"],"id":"CHK_R2_026"}, expected: 160, got: 205  """   
+    def test_special_multi_basic(self):
+        assert checkout_solution.checkout('STX') == 45
+        
+    def test_special_multi_mixed(self):
+        assert checkout_solution.checkout('STXAB') == 125
+        
+    def test_special_multi_multi(self):
+        assert checkout_solution.checkout('STXABYZS') == 170
