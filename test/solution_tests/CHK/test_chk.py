@@ -1,14 +1,5 @@
 from solutions.CHK import checkout_solution
 
-# +------+-------+----------------+
-# | Item | Price | Special offers |
-# +------+-------+----------------+
-# | A    | 50    | 3A for 130     |
-# | B    | 30    | 2B for 45      |
-# | C    | 20    |                |
-# | D    | 15    |                |
-# +------+-------+----------------+
-
 class TestChk():
     def test_invalid(self):
         assert checkout_solution.checkout('ABCxAC') == -1
@@ -25,5 +16,12 @@ class TestChk():
     def test_special_a(self):
         assert checkout_solution.checkout('ABCACDA') == 215
 
+    def test_special_a5(self):
+        assert checkout_solution.checkout('ABACACADA') == 285
+
+    def test_special_a7(self):
+        assert checkout_solution.checkout('ABACACADAAA') == 385
+
     def test_special_b(self):
         assert checkout_solution.checkout('ABCACDB') == 200
+
