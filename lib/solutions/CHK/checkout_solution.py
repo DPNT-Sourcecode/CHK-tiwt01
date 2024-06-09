@@ -20,6 +20,7 @@ PRICES = {
     'C': 20,
     'D': 15,
     'E': 40,
+    'F': 10,
     }
 LEGAL_SKUS = PRICES.keys()
 
@@ -55,6 +56,7 @@ DISCOUNTS = {
           (multiple_price, {'amount': 5, 'price': 200}),
           ],
     'B': [(multiple_price, {'amount': 2, 'price': 45})],
+    'F': [(multiple_price, {'amount': 3, 'price': 20})],
     '*': [(free_partner, {'amount': 2, 'main_sku': 'E', 'partner_sku': 'B'})]
     }
 
@@ -117,4 +119,5 @@ class Basket:
         for sku, amount in self.to_pay_for.items():
             self.price += PRICES[sku] * amount
             # self.to_pay_for.pop(sku) # TODO
+
 
