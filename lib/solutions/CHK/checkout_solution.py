@@ -10,15 +10,6 @@ This wasn't anywhere in the documentation.  I did ~60 mins last night, pencil & 
 
 """
 
-# +------+-------+----------------+
-# | Item | Price | Special offers |
-# +------+-------+----------------+
-# | A    | 50    | 3A for 130     |
-# | B    | 30    | 2B for 45      |
-# | C    | 20    |                |
-# | D    | 15    |                |
-# +------+-------+----------------+
-
 PRICES = {
     'A': 50,
     'B': 30,
@@ -39,8 +30,10 @@ def multiple_price(basket, sku, context):
     return basket
 
 DISCOUNTS = {
-    'A': (multiple_price, {'amount': 3, 'price': 130}),
-    'B': (multiple_price, {'amount': 2, 'price': 45}),
+    'A': [(multiple_price, {'amount': 3, 'price': 130}),
+          (multiple_price, {'amount': 5, 'price': 200}),
+          ],
+    'B': [(multiple_price, {'amount': 2, 'price': 45})],
     }
 
 # noinspection PyUnusedLocal
@@ -51,8 +44,9 @@ def checkout(skus):
     order = parse_skus(skus)
     basket = Basket(order)
     ds = applicable_discounts(basket)
-    for d in ds:
-        basket = apply_discount(d, basket)
+    for dset in ds:
+        print(dset)
+        basket = apply_discounts(dset, basket)
     basket.apply_vanilla_prices()
     return basket.price
 
@@ -68,12 +62,26 @@ def parse_skus(skus):
     return d
     
 def applicable_discounts(basket):
-    return [(sku, config) for (sku,config) in DISCOUNTS.items()
+    return [(sku, configs) for (sku,configs) in DISCOUNTS.items()
             if sku in basket.to_pay_for.keys()
             ]
 
-def apply_discount(discount, basket):
-    sku, config = discount
+def apply_discounts(discount_set, basket):
+    sku, configs = discount_set
+    if len(configs) == 1:
+        config = configs[0]
+        basket = apply_discount(basket, sku, config)
+    else:
+        # order discounts by ... some effect size criterion
+        configs = sorted(configs,
+                         key=lambda cfg: cfg[1].get('amount', 0),
+                         reverse=True)
+        # apply discounts in order
+        for config in configs:
+            basket = apply_discount(basket, sku, config)
+    return basket
+
+def apply_discount(basket, sku, config):
     f, context = config
     return f(basket, sku, context)
 
@@ -87,5 +95,6 @@ class Basket:
         for sku, amount in self.to_pay_for.items():
             self.price += PRICES[sku] * amount
             # self.to_pay_for.pop(sku) # TODO
+
 
 
