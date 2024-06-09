@@ -21,7 +21,27 @@ PRICES = {
     'D': 15,
     'E': 40,
     'F': 10,
-    }
+    'G': 20,
+    'H': 10,
+    'I': 35,
+    'J': 60,
+    'K': 80,
+    'L': 90,
+    'M': 15,
+    'N': 40,
+    'O': 10,
+    'P': 50,
+    'Q': 30,
+    'R': 50,
+    'S': 30,
+    'T': 20,
+    'U': 40,
+    'V': 50,
+    'W': 20,
+    'X': 90,
+    'Y': 10,
+    'Z': 50,
+}
 LEGAL_SKUS = PRICES.keys()
 
 def multiple_price(basket, sku, context):
@@ -57,7 +77,20 @@ DISCOUNTS = {
           ],
     'B': [(multiple_price, {'amount': 2, 'price': 45})],
     'F': [(multiple_price, {'amount': 3, 'price': 20})],
-    '*': [(free_partner, {'amount': 2, 'main_sku': 'E', 'partner_sku': 'B'})]
+    'H': [(multiple_price, {'amount': 5, 'price': 45}),
+          (multiple_price, {'amount': 10, 'price': 80}),
+          ],
+    'K': [(multiple_price, {'amount': 2, 'price': 150})],
+    'P': [(multiple_price, {'amount': 5, 'price': 200})],
+    'Q': [(multiple_price, {'amount': 3, 'price': 80})],
+    'V': [(multiple_price, {'amount': 2, 'price': 90}),
+          (multiple_price, {'amount': 3, 'price': 130}),
+          ],
+    '*': ((free_partner, {'amount': 2, 'main_sku': 'E', 'partner_sku': 'B'}),
+          (free_partner, {'amount': 3, 'main_sku': 'N', 'partner_sku': 'M'}),          
+          (free_partner, {'amount': 3, 'main_sku': 'R', 'partner_sku': 'Q'}),          
+          (free_partner, {'amount': 3, 'main_sku': 'U', 'partner_sku': 'U'}),          
+          )
     }
 
 # noinspection PyUnusedLocal
@@ -119,5 +152,3 @@ class Basket:
         for sku, amount in self.to_pay_for.items():
             self.price += PRICES[sku] * amount
             # self.to_pay_for.pop(sku) # TODO
-
-
