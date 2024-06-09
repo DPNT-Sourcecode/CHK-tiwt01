@@ -102,7 +102,7 @@ DISCOUNTS = {
     'K': [(multiple_price, {'amount': 2, 'price': 120})],
     'P': [(multiple_price, {'amount': 5, 'price': 200})],
     'Q': [(multiple_price, {'amount': 3, 'price': 80})],
-    'U': [(multiple_price, {'amount': 3, 'price': 80})],
+    'U': [(multiple_price, {'amount': 4, 'price': 120})],
     'V': [(multiple_price, {'amount': 2, 'price': 90}),
           (multiple_price, {'amount': 3, 'price': 130}),
           ],

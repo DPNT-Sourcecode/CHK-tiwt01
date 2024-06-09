@@ -42,3 +42,6 @@ class TestChk():
         
     def test_special_multi_multi(self):
         assert checkout_solution.checkout('STXABYZS') == 170
+
+    def test_special_uuu(self):
+        assert checkout_solution.checkout('UUU') == 120
