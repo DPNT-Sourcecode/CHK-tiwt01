@@ -25,7 +25,7 @@ PRICES = {
     'H': 10,
     'I': 35,
     'J': 60,
-    'K': 80,
+    'K': 70,
     'L': 90,
     'M': 15,
     'N': 40,
@@ -33,14 +33,14 @@ PRICES = {
     'P': 50,
     'Q': 30,
     'R': 50,
-    'S': 30,
+    'S': 20,
     'T': 20,
     'U': 40,
     'V': 50,
     'W': 20,
-    'X': 90,
-    'Y': 10,
-    'Z': 50,
+    'X': 17,
+    'Y': 20,
+    'Z': 21,
 }
 LEGAL_SKUS = PRICES.keys()
 
@@ -80,18 +80,24 @@ DISCOUNTS = {
     'H': [(multiple_price, {'amount': 5, 'price': 45}),
           (multiple_price, {'amount': 10, 'price': 80}),
           ],
-    'K': [(multiple_price, {'amount': 2, 'price': 150})],
+    'K': [(multiple_price, {'amount': 2, 'price': 120})],
     'P': [(multiple_price, {'amount': 5, 'price': 200})],
     'Q': [(multiple_price, {'amount': 3, 'price': 80})],
+    'U': [(multiple_price, {'amount': 3, 'price': 80})],
     'V': [(multiple_price, {'amount': 2, 'price': 90}),
           (multiple_price, {'amount': 3, 'price': 130}),
           ],
     '*': ((free_partner, {'amount': 2, 'main_sku': 'E', 'partner_sku': 'B'}),
           (free_partner, {'amount': 3, 'main_sku': 'N', 'partner_sku': 'M'}),          
           (free_partner, {'amount': 3, 'main_sku': 'R', 'partner_sku': 'Q'}),          
-          (free_partner, {'amount': 3, 'main_sku': 'U', 'partner_sku': 'U'}),          
           )
     }
+
+# | S    | 20    | buy any 3 of (S,T,X,Y,Z) for 45 |
+# | T    | 20    | buy any 3 of (S,T,X,Y,Z) for 45 |
+# | X    | 17    | buy any 3 of (S,T,X,Y,Z) for 45 |
+# | Y    | 20    | buy any 3 of (S,T,X,Y,Z) for 45 |
+# | Z    | 21    | buy any 3 of (S,T,X,Y,Z) for 45 |
 
 # noinspection PyUnusedLocal
 # skus = unicode string
