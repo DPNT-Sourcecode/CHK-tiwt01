@@ -24,4 +24,3 @@ class TestChk():
 
     def test_special_b(self):
         assert checkout_solution.checkout('ABCACDB') == 200
-

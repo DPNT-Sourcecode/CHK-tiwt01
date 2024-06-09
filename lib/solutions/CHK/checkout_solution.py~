@@ -46,4 +46,3 @@ def calc_offer(amount, normal_price, offer):
     multiple, special_price = offer
     specials, normals = divmod(amount, multiple)
     return (specials * special_price) + (normals * normal_price)
-

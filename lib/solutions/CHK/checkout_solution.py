@@ -29,11 +29,29 @@ def multiple_price(basket, sku, context):
         basket.price += multi_price
     return basket
 
+def free_partner(basket, _, context):
+    trigger_amount = context['amount']
+    sku = context['main_sku']
+    partner = context['partner_sku']
+    while basket.to_pay_for.get(sku, 0) >= trigger_amount:
+        basket.to_pay_for[sku] -= trigger_amount
+        basket.paid_for.setdefault(sku, 0)
+        basket.paid_for[sku] += trigger_amount
+        basket.price += PRICES[sku] * trigger_amount
+        pa = basket.to_pay_for.get(partner, 0)
+        if pa:
+            basket.to_pay_for[partner] -= 1
+            basket.paid_for.setdefault(partner, 0)
+            basket.paid_for[partner] += 1
+    return basket
+        
+# '*' discounts are "whole basket" discounts
 DISCOUNTS = {
     'A': [(multiple_price, {'amount': 3, 'price': 130}),
           (multiple_price, {'amount': 5, 'price': 200}),
           ],
     'B': [(multiple_price, {'amount': 2, 'price': 45})],
+    '*': [(free_partner, {'amount': 2, 'main_sku': 'E', 'partner_sku': 'B'})]
     }
 
 # noinspection PyUnusedLocal
@@ -45,7 +63,6 @@ def checkout(skus):
     basket = Basket(order)
     ds = applicable_discounts(basket)
     for dset in ds:
-        print(dset)
         basket = apply_discounts(dset, basket)
     basket.apply_vanilla_prices()
     return basket.price
@@ -62,9 +79,10 @@ def parse_skus(skus):
     return d
     
 def applicable_discounts(basket):
-    return [(sku, configs) for (sku,configs) in DISCOUNTS.items()
-            if sku in basket.to_pay_for.keys()
-            ]
+    # '*' discounts should be applied first
+    return sorted([(sku, configs) for (sku,configs) in DISCOUNTS.items()
+                   if sku == '*' or sku in basket.to_pay_for.keys()
+                   ])
 
 def apply_discounts(discount_set, basket):
     sku, configs = discount_set
@@ -95,6 +113,3 @@ class Basket:
         for sku, amount in self.to_pay_for.items():
             self.price += PRICES[sku] * amount
             # self.to_pay_for.pop(sku) # TODO
-
-
-
