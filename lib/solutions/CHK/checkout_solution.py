@@ -8,6 +8,10 @@ On starting this morning there was an alert:
 
 This wasn't anywhere in the documentation.  I did ~60 mins last night, pencil & paper sketches and refactoring.
 
+** 1013
+
+The `./record_and_upload.sh --no-video` scripts seems to stop after a while.
+
 """
 
 PRICES = {
@@ -113,3 +117,4 @@ class Basket:
         for sku, amount in self.to_pay_for.items():
             self.price += PRICES[sku] * amount
             # self.to_pay_for.pop(sku) # TODO
+
