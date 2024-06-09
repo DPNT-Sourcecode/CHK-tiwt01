@@ -12,6 +12,8 @@ This wasn't anywhere in the documentation.  I did ~60 mins last night, pencil & 
 
 The `./record_and_upload.sh --no-video` scripts seems to stop after a while.
 
+emacs backup files seems to mess with the java program's filesystem checks: the program crashes after a file not found error.
+
 """
 
 PRICES = {
