@@ -1,5 +1,6 @@
 """ Diary
 * 2024-09-07 Sun
+
 ** 0935
 
 On starting this morning there was an alert:
@@ -14,6 +15,15 @@ The `./record_and_upload.sh --no-video` scripts seems to stop after a while.
 
 emacs backup files seems to mess with the java program's filesystem checks: the program crashes after a file not found error.
 
+** 1135
+
+On applying discounts to follow this policy: "The policy of the supermarket is to always favor the customer when applying special offers."
+
+The code as it is applies a rudimentary ordering on discounts: whole basket discounts before single product discounts; single product discounts ordered by size of trigger amount.  If the optimisation problem -- ordering discounts to maximise effect -- got at all complicated, I would consider not implementing it in python, but farming out the processing to a language tailored to optimisation, eg clingo, minizinc, picat, etc.
+
+This old blog post of mine shows a port of a 3rd-party python puzzle-solving program to prolog.  The original program finds a single solution in 5 minutes.  The prolog port finds all solutions (6 iirc) in under a second.
+
+  https://llaisdy.co.uk/2015/01/13/that-giants-causeway-puzzle-in-prolog/
 """
 
 PRICES = {
@@ -67,7 +77,6 @@ def free_partner(basket, _, context):
     return basket
 
 def multi(basket, _, context):
-    # buy any 3 of (S,T,X,Y,Z) for 45
     trigger_amount = context['amount']
     partners = multi_sorted_by_price(context['partners'])
     price = context['price']
@@ -115,12 +124,6 @@ DISCOUNTS = {
           )
     }
 
-# | S    | 20    | buy any 3 of (S,T,X,Y,Z) for 45 |
-# | T    | 20    | buy any 3 of (S,T,X,Y,Z) for 45 |
-# | X    | 17    | buy any 3 of (S,T,X,Y,Z) for 45 |
-# | Y    | 20    | buy any 3 of (S,T,X,Y,Z) for 45 |
-# | Z    | 21    | buy any 3 of (S,T,X,Y,Z) for 45 |
-
 # noinspection PyUnusedLocal
 # skus = unicode string
 def checkout(skus):
@@ -158,6 +161,7 @@ def apply_discounts(discount_set, basket):
         basket = apply_discount(basket, sku, config)
     else:
         # order discounts by ... some effect size criterion
+        # see note in top level comment
         configs = sorted(configs,
                          key=lambda cfg: cfg[1].get('amount', 0),
                          reverse=True)
@@ -179,7 +183,6 @@ class Basket:
     def apply_vanilla_prices(self):
         for sku, amount in self.to_pay_for.items():
             self.price += PRICES[sku] * amount
-            # self.to_pay_for.pop(sku) # TODO
 
     def transfer(self, sku, amount):
         self.to_pay_for[sku] -= amount
